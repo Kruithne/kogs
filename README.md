@@ -14,7 +14,8 @@ This project is developed with the following motivations:
 **Isn't this just reinventing the wheel?** Yes, there is a vast ecosystem of existing modules that provide similar functionality. However, I often find when pulling in third-party modules I run into some common problems:
 - Modules are too large and include functionality/complexity that I don't need.
 - Modules have way too many dependencies, often including large libraries like `lodash` or `moment`, or unnecessary single-function modules like `is-plain-object`.
-- Modules can be poorly maintained and has a long list of open issues and pull requests. Taking the time to patch upstream issues in an unfamiliar codebase can be a time-consuming process.
+- Modules can be poorly maintained and have long lists of open issues and pull requests. Taking the time to patch upstream issues in an unfamiliar codebase can be a time-consuming process.
+- Modules might not implement all desired functionality, requiring compromise, or upstream/fork development.
 - Modules that are no longer maintained end up with security vulnerabilities that require auditing.
 - Modules can be poorly documented and/or have a confusing APIs.
 - Using a variety of modules from different sources leads in inconsistent APIs and conventions.
