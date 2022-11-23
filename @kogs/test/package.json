@@ -1,6 +1,6 @@
 {
 	"name": "@kogs/test",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "Provides unit testing functionality",
 	"license": "MIT",
 	"repository": {
@@ -8,7 +8,7 @@
 		"url": "git://github.com/Kruithne/kogs.git"
 	},
 	"bugs": "https://github.com/Kruithne/kogs/labels/module-test",
-	"homepage": "https://github.com/Kruithne/kogs/test",
+	"homepage": "https://github.com/Kruithne/kogs/tree/main/%40kogs/test",
 	"main": "index.mjs",
 	"author": {
 		"name": "Kruithne",
