@@ -12,7 +12,7 @@ let promises = [];
  * @param {function} fn 
  * @param {string} [name]
  */
-export function test(fn, name) {
+function run(fn, name) {
 	const testPromise = new Promise(async (resolve) => {
 		let testName = name;
 
@@ -62,7 +62,11 @@ export function test(fn, name) {
 	return testPromise;
 };
 
-export async function results() {
+/**
+ * Prints the results of tests and resets internal
+ * state for the next batch of test runs.
+ */
+async function results() {
 	// Wait for all test promises to resolve.
 	await Promise.all(promises);
 
@@ -84,7 +88,7 @@ export async function results() {
  * @param {function} fn 
  * @return { Promise<{ stdout: string[], stderr: string[] }> }
  */
-export async function capture(fn) {
+async function capture(fn) {
 	const stdout_write = process.stdout.write;
 	const stderr_write = process.stderr.write;
 
@@ -105,3 +109,6 @@ export async function capture(fn) {
 
 	return { stdout, stderr };
 };
+
+export { run, results, capture };
+export default { run, results, capture };

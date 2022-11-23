@@ -1,6 +1,6 @@
 {
 	"name": "@kogs/test",
-	"version": "0.0.9",
+	"version": "1.0.0",
 	"description": "Provides unit testing functionality",
 	"license": "MIT",
 	"repository": {
