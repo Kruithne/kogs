@@ -1,4 +1,6 @@
 # kogs
+[![License: MIT](https://img.shields.io/github/license/kruithne/kogs?style=flat-square)](https://github.com/Kruithne/kogs/blob/main/LICENSE)
+
 `kogs` is a monorepo that contains a collection of lightweight Node.js modules designed to provide foundational functionality in a generic format.
 
 This project is developed with the following motivations:

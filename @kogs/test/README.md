@@ -1,4 +1,6 @@
-# Overview
+# @kogs/test
+[![License: MIT](https://img.shields.io/github/license/kruithne/kogs?style=flat-square)](https://github.com/Kruithne/kogs/blob/main/LICENSE)
+
 `@kogs/test` is a mini testing utility that aims to provide a simple interface for running tests.
 
 For small projects, I've often found myself reaching for the benefits of basic unit testing. Instead of bringing in a large tool to achieve this simple goal, this module aims to provide the bare-bones for running tests which is more often enough.
