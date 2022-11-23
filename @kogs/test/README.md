@@ -12,7 +12,7 @@ npm install --save-dev @kogs/test
 # Usage
 **Test Running**
 ```js
-import { test, results } from 'kru-node-test';
+import { test, results } from '@kogs/test';
 import assert from 'node:assert/strict';
 
 test(() => {
