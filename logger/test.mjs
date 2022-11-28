@@ -46,7 +46,7 @@ import pc from 'picocolors';
 			// log.pc should be picocolors
 			assert.equal(log.pc, pc, 'log.pc should be picocolors');
 		});
-	}, 'log.write() basic functionality');
+	}, 'test log.write() basic functionality');
 
 	await test.run(() => {
 		test.capture((stdout) => {
@@ -63,7 +63,7 @@ import pc from 'picocolors';
 			log.write('Test');
 			assert.equal(stdout.shift(), 'Test\n', 'log.setPrefix() should clear log prefix when called with no arguments');
 		});
-	}, 'Prefix tests');
+	}, 'test prefixing');
 
 	await test.run(() => {
 		test.capture((stdout) => {
@@ -84,7 +84,7 @@ import pc from 'picocolors';
 			assert.equal(log._lineTerminator, '\n', 'Global line terminator should not be overwritten by instance');
 
 		});
-	}, 'Line termination tests');
+	}, 'test line termination');
 
 	await test.run(() => {
 		test.capture((stdout) => {
@@ -153,7 +153,7 @@ import pc from 'picocolors';
 
 			assert.equal(log._indentString, '\t', 'Global indent string should not be overwritten by instance');
 		});
-	}, 'Indentation tests');
+	}, 'test indentation');
 
 	await test.run(() => {
 		test.capture((stdout, stderr) => {
@@ -192,7 +192,7 @@ import pc from 'picocolors';
 			instance.test('Hello, world!');
 			assert.equal(stdout.shift(), '[!] Hello, world!\n');
 		});
-	}, 'Custom logging levels test');
+	}, 'test custom logging levels');
 
 	await test.run(() => {
 		test.capture((stdout) => {
@@ -207,7 +207,7 @@ import pc from 'picocolors';
 			instance.test('Hello, {world}!');
 			assert.equal(stdout.shift(), '[\u001b[31mtest\x1b[39m] Hello, \u001b[31mworld\x1b[39m!\n');
 		});
-	}, 'Logging level decoration test');
+	}, 'test logging level declaration');
 
 	await test.run(() => {
 		test.capture((stdout, stderr) => {
@@ -225,7 +225,7 @@ import pc from 'picocolors';
 			instance.success('This is a {success} message about %s!', 'something');
 			assert.equal(stdout.shift(), '[\x1B[32m✓\x1B[39m] This is a \x1B[32msuccess\x1B[39m message about something!\n');
 		});
-	}, 'Built-in logging levels test');
+	}, 'test built-in logging levels');
 
 	await test.results();
 })();
