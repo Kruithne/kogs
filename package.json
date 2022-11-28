@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@kogs/logger": "file:@kogs/logger",
+    "@kogs/test": "file:@kogs/test"
+  }
+}
