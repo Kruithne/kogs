@@ -34,3 +34,8 @@ Using home-grown modules also has some benefits:
 The main goal of these modules will be to facilitate the development of my own projects. This will result in opinionated APIs and conventions that may not be ideal for everyone. However, I will try to keep the APIs as simple and consistent as possible, and will be open to suggestions for improvements.
 
 All modules will adhere to semantic versioning, and will be published to npm under the `@kogs` scope.
+
+## Legal
+All modules in this repository are licensed under the MIT license. See [LICENSE](LICENSE) for more information.
+
+All code in this repository is provided as-is, without warranty of any kind. I am not responsible for any damage caused by the use of this code.
