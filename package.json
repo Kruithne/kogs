@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@kogs/logger": "file:@kogs/logger",
+    "@kogs/markdown": "file:@kogs/markdown",
     "@kogs/test": "file:@kogs/test"
   }
 }
