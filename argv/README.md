@@ -31,6 +31,12 @@ args = {
 	c: 'baz'
 };
 ```
+Rather than using the default `process.argv` source, you can also pass an array of arguments to parse:
+```js
+const args = argv.parse(['--foo', 'bar']);
+// > args = { foo: 'bar' }
+```
+Note that unlike `process.argv`, the whole array is parsed, since the executable and script path are not expected to be present.
 # Short Options
 
 Short options are single-character options prefixed with a `-` and can combined into groups. For example, `-abc` is equivalent to `-a -b -c`. Without a value, the option is treated as a boolean flag.
