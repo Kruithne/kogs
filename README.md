@@ -3,6 +3,13 @@
 
 `kogs` is a monorepo that contains a collection of lightweight Node.js modules designed to provide foundational functionality in a generic format.
 
+| Package | Description |
+| ------- | ----------- |
+| [@kogs/argv](https://github.com/Kruithne/kogs/tree/main/argv) | Parses command line arguments. |
+| [@kogs/logger](https://github.com/Kruithne/kogs/tree/main/logger) | Provides logging functions. |
+| [@kogs/test](https://github.com/Kruithne/kogs/tree/main/test) | Unit testing bootstrap. |
+| [@kogs/markdown](https://github.com/Kruithne/kogs/tree/main/markdown) | Renders data in Markdown format. |
+
 This project is developed with the following motivations:
 
 - Reduce code duplication in projects by providing a common set of functionality split into small, focused modules.
