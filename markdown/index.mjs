@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @param {array|object} optionsOrData
  * @param {array} optionsOrData.data

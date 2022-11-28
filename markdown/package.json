@@ -1,6 +1,6 @@
 {
 	"name": "@kogs/markdown",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Provides data formatting as markdown",
 	"license": "MIT",
 	"repository": {
