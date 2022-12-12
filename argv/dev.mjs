@@ -1,10 +1,11 @@
 import argv from './index.mjs';
 
-const test = argv.parse({
-	'--fudge': {
-		
+const manifest = {
+	0: {
+		type: 'string',
+		required: true,
+		allow: ['foo', 'bar', 'baz']
 	}
-});
+};
 
-console.log(test);
-console.log(test._);
+const parsed = argv.parse(manifest);
