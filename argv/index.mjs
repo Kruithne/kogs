@@ -45,6 +45,9 @@ function isValidOptName(name) {
  * @returns {string}
  */
 function renderOptionName(name, opt) {
+	if (opt.allow !== undefined)
+		return name + '=<' + opt.allow.join('|') + '>';
+
 	if (opt.type !== undefined)
 		return name + '=<' + opt.type + '>';
 
@@ -148,6 +151,28 @@ function parse(manifest, args) {
 			// If opt.default is provided, it must be of the same type as opt.type.
 			if (opt.default !== undefined && opt.type !== undefined && typeof opt.default !== opt.type)
 				throw new Error('Invalid manifest entry {' + name + '}: Default value {' + opt.default + '} is not of type {' + opt.type + '}.');
+
+			if (opt.allow !== undefined) {
+				// If opt.allow is defined, it must be an array.
+				if (!Array.isArray(opt.allow) || opt.allow.length === 0)
+					throw new Error('Invalid manifest entry {' + name + '}: Allow list must be an array containing at least one item.');
+
+				if (opt.type !== undefined) {
+					// If opt.type is defined, it cannot be boolean.
+					if (opt.type === 'boolean')
+						throw new Error('Invalid manifest entry {' + name + '}: Allow list cannot be used with boolean options.');
+
+					// Otherwise, all values in the allow list must be of the same type as opt.type.
+					const expectedType = opt.type === 'string' ? 'string' : 'number';
+					for (const value of opt.allow)
+						if (typeof value !== expectedType)
+							throw new Error('Invalid manifest entry {' + name + '}: Allow list contains invalid value {' + value + '}, must be of type {' + expectedType + '}.');
+				}
+
+				// If opt.default is set, it must be in the allow list.
+				if (opt.default !== undefined && !opt.allow.includes(opt.default))
+					throw new Error('Invalid manifest entry {' + name + '}: Default value {' + opt.default + '} is not in the allow list.');
+			}
 		}
 
 		for (const [name, opt] of Object.entries(manifest)) {
@@ -170,6 +195,10 @@ function parse(manifest, args) {
 							throw new Error('Invalid value {' + rawValue + '} for argument {' + renderOptionName(name, opt) + '}');
 					}
 				}
+
+				// Value whitelist check.
+				if (opt.allow !== undefined && !opt.allow.includes(value))
+					throw new Error('Invalid value {' + value + '} for argument {' + renderOptionName(name, opt) + '}');
 
 				parsed[name] = value;
 			} else {

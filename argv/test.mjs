@@ -176,5 +176,34 @@ import argv from './index.mjs';
 		}, ['--foo', 'bar']), 'argv.parse() should not throw an error when a required option is provided');
 	}, 'test argv.parse() manifest required options');
 
+	await test.run(() => {
+		// Test that if opt.allow is not an array, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { allow: 'bar' }}), 'argv.parse() should throw an error when opt.allow is not an array');
+
+		// Test that if opt.allow is an empty array, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { allow: [] }}), 'argv.parse() should throw an error when opt.allow is an empty array');
+
+		// Test that if opt.type is a string and opt.allow is not an array of strings, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { type: 'string', allow: [1] }}), 'argv.parse() should throw an error when opt.type is a string and opt.allow is not an array of strings');
+
+		// Test that if opt.type is int and opt.allow is not an array of ints, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { type: 'int', allow: ['bar'] }}), 'argv.parse() should throw an error when opt.type is int and opt.allow is not an array of ints');
+
+		// Test that if opt.type is float and opt.allow is not an array of floats, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { type: 'float', allow: ['bar'] }}), 'argv.parse() should throw an error when opt.type is float and opt.allow is not an array of floats');
+
+		// Test that if opt.type is boolean and opt.allow is set, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { type: 'boolean', allow: ['bar'] }}), 'argv.parse() should throw an error when opt.type is boolean and opt.allow is set');
+
+		// Test that if opt.allow is set and opt.default is not in opt.allow, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'], default: 'baz' }}), 'argv.parse() should throw an error when opt.allow is set and opt.default is not in opt.allow');
+
+		// Test that if opt.allow is set and a value is provided that is not in opt.allow, an error is thrown.
+		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'] }}, ['--foo', 'baz']), 'argv.parse() should throw an error when opt.allow is set and a value is provided that is not in opt.allow');
+
+		// Test that if opt.allow is set and a value is provided that is in opt.allow, no error is thrown.
+		assert.doesNotThrow(() => argv.parse({ 'foo': { allow: ['bar'] }}, ['--foo', 'bar']), 'argv.parse() should not throw an error when opt.allow is set and a value is provided that is in opt.allow');
+	}, 'test argv.parse() manifest allow list');
+
 	await test.results();
 })();

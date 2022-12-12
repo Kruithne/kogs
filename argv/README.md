@@ -230,3 +230,21 @@ const manifest = {
 argv.parse(['--foo=true'], manifest);
 // > Error: Invalid value {true} for option {--foo=<boolean>}
 ```
+
+**Allowed Values**
+
+For options which have a limited set of allowed values, you can specify the `allow` property as an array. If the provided value is not in the array, an error will be thrown.
+```js
+const manifest = {
+	'foo': {
+		type: 'string',
+		allow: ['bar', 'baz']
+	}
+};
+
+argv.parse(['--foo', 'bar'], manifest);
+// > { foo: 'bar' }
+
+argv.parse(['--foo', 'qux'], manifest);
+// > Error: Invalid value {qux} for option {--foo=<bar|baz>}
+```
