@@ -185,6 +185,7 @@ argv.parse(['--bar', 'baz'], manifest);
 ```
 
 **Required Arguments**
+
 Arguments can be marked as required by setting the `required` property to `true`. If a required argument is not provided by the user, an error will be thrown.
 ```js
 const manifest = {
