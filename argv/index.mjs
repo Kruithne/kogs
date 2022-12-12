@@ -66,10 +66,34 @@ function isValidOptName(name) {
  * Render an option name in a human-readable format.
  * @param {string} name 
  * @param {object} opt 
+ * @param {boolean} includeIndex
+ * @param {boolean} wrapOptional
  * @returns {string}
  */
-function renderOptionName(name, opt) {
-	return name + (opt.type === 'boolean' ? '' : '=<' + opt.allow?.join('|') ?? opt.type + '>');
+function renderOptionName(name, opt, includeIndex = false, wrapOptional = true) {
+	let part = '';
+
+	// Skip positional arguments.
+	let isPositional = name.match(/^\d+$/);
+	if (!isPositional)
+		part += name.length === 1 ? '-' + name : '--' + name;
+	else if (includeIndex)
+		part += name;
+
+	// Render a value for non-booleans.
+	if (opt.type !== 'boolean') {
+		if (!isPositional)
+			part += name.length === 1 ? ' ' : '=';
+		else if (includeIndex)
+			part += '=';
+
+		part += '<' + (opt.allow?.join('|') ?? opt.type) + '>';
+	}
+
+	if (!opt.required && wrapOptional)
+		part = '[' + part + ']';
+
+	return part;
 }
 
 /**
@@ -211,7 +235,7 @@ function parse(manifest, args) {
 				// Type checking/casting.
 				if (opt.type === 'boolean' || opt.type === 'string') {
 					if (typeof value !== opt.type)
-						throw new UserError('Invalid value {' + value + '} for argument {' + renderOptionName(name, opt) + '}', 'E_INVALID_OPT_VALUE');
+						throw new UserError('Invalid value {' + value + '} for argument {' + renderOptionName(name, opt, true) + '}', 'E_INVALID_OPT_VALUE');
 				} else {
 					if (opt.type === 'int')
 						value = parseInt(value);
@@ -219,19 +243,19 @@ function parse(manifest, args) {
 						value = parseFloat(value);
 
 					if (typeof value !== 'number' || isNaN(value))
-						throw new UserError('Invalid value {' + rawValue + '} for argument {' + renderOptionName(name, opt) + '}', 'E_INVALID_OPT_VALUE');
+						throw new UserError('Invalid value {' + rawValue + '} for argument {' + renderOptionName(name, opt, true) + '}', 'E_INVALID_OPT_VALUE');
 				}
 
 				// Value whitelist check.
 				if (opt.allow !== undefined && !opt.allow.includes(value))
-					throw new UserError('Invalid value {' + value + '} for argument {' + renderOptionName(name, opt) + '}', 'E_INVALID_OPT_VALUE');
+					throw new UserError('Invalid value {' + value + '} for argument {' + renderOptionName(name, opt, true) + '}', 'E_INVALID_OPT_VALUE');
 
 				parsed[name] = value;
 			} else {
 				if (opt.default !== undefined)
 					parsed[name] = opt.default;
 				else if (opt.required)
-					throw new UserError('Required option {' + renderOptionName(name, opt) + '} not provided', 'E_MISSING_OPT');
+					throw new UserError('Required option {' + renderOptionName(name, opt, true) + '} not provided', 'E_MISSING_OPT');
 			}
 		}
 	}
@@ -251,30 +275,27 @@ function syntax(manifest) {
 	validateManifest(manifest);
 
 	const parts = [];
-	for (const [name, opt] of Object.entries(manifest)) {
-		let part = '';
-
-		// Skip positional arguments.
-		let isPositional = name.match(/^\d+$/);
-		if (!isPositional)
-			part += name.length === 1 ? '-' + name : '--' + name;
-
-		// Render a value for non-booleans.
-		if (opt.type !== 'boolean') {
-			if (!isPositional)
-				part += name.length === 1 ? ' ' : '=';
-
-			part += '<' + (opt.allow?.join('|') ?? opt.type) + '>';
-		}
-
-		if (!opt.required)
-			part = '[' + part + ']';
-
-		parts.push(part);
-	}
+	for (const [name, opt] of Object.entries(manifest))
+		parts.push(renderOptionName(name, opt));
 
 	return parts.join(' ');
 }
 
-export default { parse, syntax, DeveloperError, UserError };
-export { parse, syntax, DeveloperError, UserError };
+/**
+ * Renders help strings for the options in a manifest.
+ * @param {object} manifest 
+ * @returns {string[]}
+ */
+function help(manifest) {
+	validateManifest(manifest);
+
+	const lines = [];
+
+	for (const [name, opt] of Object.entries(manifest))
+		lines.push('{' + renderOptionName(name, opt, true, false) + '}' + (opt.info ? ' - ' + opt.info : ''));
+
+	return lines;
+}
+
+export default { parse, syntax, help, DeveloperError, UserError };
+export { parse, syntax, help, DeveloperError, UserError };

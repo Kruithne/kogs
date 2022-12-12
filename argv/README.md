@@ -327,3 +327,44 @@ Below are the possible error codes that may be thrown as a `UserError`.
 | E_INVALID_OPT_VALUE | Invalid option value provided |
 | E_MISSING_OPT | Required option not provided |
 | E_UNKNOWN_OPT | Unknown option provided |
+
+To assist with error handling, the functions `argv.syntax(manifest)` and `argv.help(manifest)` are provided.
+
+`argv.syntax()` will return a string which can be used to display the syntax of the program.
+```js
+const manifest = {
+	0: {
+		type: 'int'
+	},
+
+	'foo': {
+		type: 'string',
+	}
+};
+
+console.log('Usage: my-script ' + argv.syntax(manifest));
+// > my-script [<int>] [--foo=<string>]
+```
+
+`argv.help()` compiles all of the options provided in the manifest into a table which can be used to display the help text for the program.
+
+To provide additional information about each option, you can specify the `info` property on options.
+
+```js
+const manifest = {
+	'foo': {
+		type: 'string',
+		info: 'Description of the --foo option.'
+	},
+
+	'bar': {
+		type: 'string',
+		info: 'Description of the --bar option.'
+	}
+};
+
+argv.help(manifest).forEach(line => console.log(line));
+
+// > {--foo=<string>} - Description of the --foo option.
+// > {--bar=<string>} - Description of the --bar option.
+```
