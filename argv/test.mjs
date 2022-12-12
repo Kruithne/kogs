@@ -53,7 +53,10 @@ import argv from './index.mjs';
 		// Test that providing non-object as a manifest entry throws error.
 		assert.throws(() => argv.parse({ 'foo': 'bar' }), 'argv.parse() should throw an error when a manifest option is not an object');
 
-		// Test that if opt.type is set, error is thrown if it is not a valid type.
+		// Test that if opt.type is not set, error is thrown.
+		assert.throws(() => argv.parse({ 'foo': {} }), 'argv.parse() should throw an error when a manifest option type is not set');
+
+		// Test that if opt.type is not a valid type, error is thrown.
 		assert.throws(() => argv.parse({ 'foo': { type: 'bar' } }), 'argv.parse() should throw an error when a manifest option type is not a valid type');
 
 		// Test that if opt.default is set and opt.type is set, error is thrown if they are not the same type.
@@ -72,7 +75,7 @@ import argv from './index.mjs';
 
 	await test.run(() => {
 		assert.doesNotThrow(() => argv.parse({
-			'foo': {}
+			'foo': { type: 'string' }
 		}, ['--foo', 'bar']), 'argv.parse() should not throw an error when a manifest is provided and the option exists in the manifest');
 
 		assert.throws(() => argv.parse({}, ['--foo', 'bar']), 'argv.parse() should throw an error when a manifest is provided and the option does not exist in the manifest');
@@ -141,21 +144,24 @@ import argv from './index.mjs';
 		// Test if no value is provided that the default value is used.
 		assert.deepEqual(argv.parse({
 			'foo': {
-				default: 'bar'
+				default: 'bar',
+				type: 'string'
 			}
 		}, []), { foo: 'bar' }, 'argv.parse() should use the default value in the manifest when no value is provided');
 
 		// Test if a value is provided that the default value is not used.
 		assert.deepEqual(argv.parse({
 			'foo': {
-				default: 'bar'
+				default: 'bar',
+				type: 'string'
 			}
 		}, ['--foo', 'baz']), { foo: 'baz' }, 'argv.parse() should use the provided value in the manifest when a value is provided');
 
 		// Test that opt.default works for positional arguments.
 		assert.deepEqual(argv.parse({
 			0: {
-				default: true
+				default: true,
+				type: 'boolean'
 			}
 		}, []), { 0: true }, 'argv.parse() should use the provided value in the manifest when a value is provided');
 	}, 'test argv.parse() manifest default values');
@@ -164,24 +170,26 @@ import argv from './index.mjs';
 		// Test that if a required option is missing, an error is thrown.
 		assert.throws(() => argv.parse({
 			'foo': {
-				required: true
+				required: true,
+				type: 'string'
 			}
 		}, []), 'argv.parse() should throw an error when a required option is missing');
 
 		// Test that if a required option is provided, no error is thrown.
 		assert.doesNotThrow(() => argv.parse({
 			'foo': {
-				required: true
+				required: true,
+				type: 'string'
 			}
 		}, ['--foo', 'bar']), 'argv.parse() should not throw an error when a required option is provided');
 	}, 'test argv.parse() manifest required options');
 
 	await test.run(() => {
 		// Test that if opt.allow is not an array, an error is thrown.
-		assert.throws(() => argv.parse({ 'foo': { allow: 'bar' }}), 'argv.parse() should throw an error when opt.allow is not an array');
+		assert.throws(() => argv.parse({ 'foo': { allow: 'bar', type: 'string' }}), 'argv.parse() should throw an error when opt.allow is not an array');
 
 		// Test that if opt.allow is an empty array, an error is thrown.
-		assert.throws(() => argv.parse({ 'foo': { allow: [] }}), 'argv.parse() should throw an error when opt.allow is an empty array');
+		assert.throws(() => argv.parse({ 'foo': { allow: [], type: 'string' }}), 'argv.parse() should throw an error when opt.allow is an empty array');
 
 		// Test that if opt.type is a string and opt.allow is not an array of strings, an error is thrown.
 		assert.throws(() => argv.parse({ 'foo': { type: 'string', allow: [1] }}), 'argv.parse() should throw an error when opt.type is a string and opt.allow is not an array of strings');
@@ -196,14 +204,55 @@ import argv from './index.mjs';
 		assert.throws(() => argv.parse({ 'foo': { type: 'boolean', allow: ['bar'] }}), 'argv.parse() should throw an error when opt.type is boolean and opt.allow is set');
 
 		// Test that if opt.allow is set and opt.default is not in opt.allow, an error is thrown.
-		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'], default: 'baz' }}), 'argv.parse() should throw an error when opt.allow is set and opt.default is not in opt.allow');
+		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'], default: 'baz', type: 'string' }}), 'argv.parse() should throw an error when opt.allow is set and opt.default is not in opt.allow');
 
 		// Test that if opt.allow is set and a value is provided that is not in opt.allow, an error is thrown.
-		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'] }}, ['--foo', 'baz']), 'argv.parse() should throw an error when opt.allow is set and a value is provided that is not in opt.allow');
+		assert.throws(() => argv.parse({ 'foo': { allow: ['bar'], type: 'string' }}, ['--foo', 'baz']), 'argv.parse() should throw an error when opt.allow is set and a value is provided that is not in opt.allow');
 
 		// Test that if opt.allow is set and a value is provided that is in opt.allow, no error is thrown.
-		assert.doesNotThrow(() => argv.parse({ 'foo': { allow: ['bar'] }}, ['--foo', 'bar']), 'argv.parse() should not throw an error when opt.allow is set and a value is provided that is in opt.allow');
+		assert.doesNotThrow(() => argv.parse({ 'foo': { allow: ['bar'], type: 'string' }}, ['--foo', 'bar']), 'argv.parse() should not throw an error when opt.allow is set and a value is provided that is in opt.allow');
 	}, 'test argv.parse() manifest allow list');
+
+	await test.run(() => {
+		// Test that, given an empty manifest, argv.syntax() returns an empty string.
+		assert.equal(argv.syntax({}), '', 'argv.syntax() should return an empty string when given an empty manifest');
+
+		// Test that, given a non-object manifest, argv.syntax() returns an empty string.
+		assert.equal(argv.syntax('foo'), '', 'argv.syntax() should return an empty string when given a non-object manifest');
+
+		// { 0: { type: 'string' } } should return '[<string>]'
+		assert.equal(argv.syntax({ 0: { type: 'string' } }), '[<string>]', 'argv.syntax() should return <string> when given { 0: { type: "string" } }');
+
+		// { 0: { type: 'string', required: true } } should return '<string>'
+		assert.equal(argv.syntax({ 0: { type: 'string', required: true } }), '<string>', 'argv.syntax() should return <string> when given { 0: { type: "string", required: true } }');
+
+		// { 0: { type: 'string', required: true }, 1: { type: 'string' } } should return '<string> [<string>]'
+		assert.equal(argv.syntax({ 0: { type: 'string', required: true }, 1: { type: 'string' } }), '<string> [<string>]', 'argv.syntax() should return <string> [<string>] when given { 0: { type: "string", required: true }, 1: { type: "string" } }');
+
+		// { 'a': { type: 'string' } } should return '[-a <string>]'
+		assert.equal(argv.syntax({ 'a': { type: 'string' } }), '[-a <string>]', 'argv.syntax() should return [-a <string>] when given { "a": { type: "string" } }');
+
+		// { 'a': { type: 'string', required: true } } should return '-a <string>'
+		assert.equal(argv.syntax({ 'a': { type: 'string', required: true } }), '-a <string>', 'argv.syntax() should return -a <string> when given { "a": { type: "string", required: true } }');
+
+		// { 'a': { type: 'boolean' } } should return '[-a]'
+		assert.equal(argv.syntax({ 'a': { type: 'boolean' } }), '[-a]', 'argv.syntax() should return [-a] when given { "a": { type: "boolean" } }');
+
+		// { 'a': { required: true, type: 'boolean' } } should return '-a'
+		assert.equal(argv.syntax({ 'a': { required: true, type: 'boolean' } }), '-a', 'argv.syntax() should return -a when given { "a": { required: true, type: "boolean" } }');
+
+		// { 'foo': { type: 'string' }, 'bar': { type: 'string' } } should return '[-foo <string>] [-bar <string>]'
+		assert.equal(argv.syntax({ 'foo': { type: 'string' }, 'bar': { type: 'string' } }), '[--foo=<string>] [--bar=<string>]', 'argv.syntax() should return [--foo=<string>] [--bar=<string>] when given { "foo": { type: "string" }, "bar": { type: "string" } }');
+
+		// { 'foo': { type: 'string', required: true }, 'bar': { type: 'string' } } should return '-foo <string> [-bar <string>]'
+		assert.equal(argv.syntax({ 'foo': { type: 'string', required: true }, 'bar': { type: 'string' } }), '--foo=<string> [--bar=<string>]', 'argv.syntax() should return -foo=<string> [--bar=<string>] when given { "foo": { type: "string", required: true }, "bar": { type: "string" } }');
+
+		// { 'foo': { allow: ['bar', 'baz'] } } should return '[-foo <bar|baz>]'
+		assert.equal(argv.syntax({ 'foo': { allow: ['bar', 'baz'], type: 'string' } }), '[--foo=<bar|baz>]', 'argv.syntax() should return [--foo=<bar|baz>] when given { "foo": { allow: ["bar", "baz"] } }');
+
+		// { 'foo': { allow: ['bar', 'baz'], required: true } } should return '-foo <bar|baz>'
+		assert.equal(argv.syntax({ 'foo': { allow: ['bar', 'baz'], required: true, type: 'string' } }), '--foo=<bar|baz>', 'argv.syntax() should return --foo=<bar|baz> when given { "foo": { allow: ["bar", "baz"], required: true } }');
+	}, 'test argv.syntax() output');
 
 	await test.results();
 })();

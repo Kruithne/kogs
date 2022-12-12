@@ -186,9 +186,7 @@ argv.parse(['--bar', 'baz'], manifest);
 
 **Type Casting**
 
-Specifying the `type` property in the manifest allows you to cast the provided value for an option. The following types are supported: `string`, `int`, `float`, `boolean`. Arrays are also supported (see below).
-
-> Note: If you do not specify a type, the value will be either a string or boolean depending on how the user provided the argument. To ensure you always get the expected type, you should implicitly specify it.
+Specifying the `type` property in the manifest is mandatory as it controls how the option is treated. The following types are supported: `string`, `int`, `float`, `boolean`.
 ```js
 const manifest = {
 	'foo': {
@@ -248,3 +246,54 @@ argv.parse(['--foo', 'bar'], manifest);
 argv.parse(['--foo', 'qux'], manifest);
 // > Error: Invalid value {qux} for option {--foo=<bar|baz>}
 ```
+
+# Error Handling
+
+Errors can be thrown for a variety of reasons when using `argv.parse()`. The two main distinctions are between errors which are caused by the user (e.g. invalid arguments) and errors which are caused by the developer (e.g. invalid manifest).
+
+To differentiate between the two, errors thrown due to developer mistakes will be instances of `DeveloperError`, while errors thrown due to user mistakes will be instances of `UserError`.
+
+```js
+try {
+	argv.parse(manifest, ['--foo', 'bar']);
+} catch (error) {
+	if (error instanceof argv.DeveloperError)
+		console.log('Developer error!');
+	else if (error instanceof argv.UserError)
+		console.log('User error!');
+}
+```
+
+Alternatively, you can check the `name` property of the error.
+
+```js
+try {
+	argv.parse(manifest, ['--foo', 'bar']);
+} catch (error) {
+	if (error.name === 'DeveloperError')
+		console.log('Developer error!');
+	else if (error.name === 'UserError')
+		console.log('User error!');
+}
+```
+In addition to the standard `message` property, `UserError` instances will also have a `code` property which can be used to identify the specific error.
+
+```js
+try {
+	argv.parse(manifest, ['--foo', 'bar']);
+} catch (error) {
+	if (error.code === 'INVALID_VALUE')
+		console.log('Invalid value!');
+	else if (error.code === 'UNKNOWN_ARGUMENT')
+		console.log('Unknown argument!');
+}
+```
+
+Below are the possible error codes that may be thrown as a `UserError`.
+
+| Code | Description |
+|------|-------------|
+| E_INVALID_OPT_NAME | Invalid option name provided |
+| E_INVALID_OPT_VALUE | Invalid option value provided |
+| E_MISSING_OPT | Required option not provided |
+| E_UNKNOWN_OPT | Unknown option provided |
