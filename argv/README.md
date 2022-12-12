@@ -181,7 +181,7 @@ const manifest = {
 };
 
 argv.parse(['--bar', 'baz'], manifest);
-// > Error: Unknown argument {--bar}
+// > Error: Unknown option {--bar} provided.
 ```
 
 **Required Arguments**
