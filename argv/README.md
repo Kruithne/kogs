@@ -198,6 +198,21 @@ argv.parse(manifest, []);
 // > Error: Required option {--foo} not provided.
 ```
 
+**Default Values**
+
+Default values can be specified by setting the `default` property. If the argument is not provided by the user, the default value will be used instead.
+```js
+const manifest = {
+	'foo': {
+		type: 'string',
+		default: 'bar'
+	}
+};
+
+argv.parse(manifest, []);
+// > { foo: 'bar' }
+```
+
 **Type Casting**
 
 Specifying the `type` property in the manifest is mandatory as it controls how the option is treated. The following types are supported: `string`, `int`, `float`, `boolean`.
