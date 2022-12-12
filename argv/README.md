@@ -184,6 +184,20 @@ argv.parse(['--bar', 'baz'], manifest);
 // > Error: Unknown argument {--bar}
 ```
 
+**Required Arguments**
+Arguments can be marked as required by setting the `required` property to `true`. If a required argument is not provided by the user, an error will be thrown.
+```js
+const manifest = {
+	'foo': {
+		type: 'string',
+		required: true
+	}
+};
+
+argv.parse(manifest, []);
+// > Error: Required option {--foo} not provided.
+```
+
 **Type Casting**
 
 Specifying the `type` property in the manifest is mandatory as it controls how the option is treated. The following types are supported: `string`, `int`, `float`, `boolean`.
