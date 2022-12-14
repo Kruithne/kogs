@@ -2,6 +2,7 @@
 
 import pc from 'picocolors';
 import util from 'node:util';
+import readline from 'node:readline';
 
 class Log {
 	_lineTerminator = '\n';
@@ -148,6 +149,25 @@ class Log {
 	setIndentString(indent) {
 		this._indentString = indent;
 		return this;
+	}
+
+	/**
+	 * Prompts the user for input and returns the response.
+	 * @param {string} message 
+	 * @returns {string}
+	 */
+	async prompt(message) {
+		return new Promise((resolve) => {
+			const rl = readline.createInterface({
+				input: process.stdin,
+				output: process.stdout
+			});
+
+			rl.question(message, answer => {
+				rl.close();
+				resolve(answer);
+			});
+		});
 	}
 
 	/**

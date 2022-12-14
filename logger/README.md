@@ -71,6 +71,11 @@ log.write('Bar'); // Global logger unaffected.
 // >     Foo
 // > Bar
 ```
+**User Prompt**
+```js
+// Prompt the user for input.
+const input = await log.prompt('Enter a value: ');
+```
 **Miscellanous**
 ```js
 log.prefix('[Fudge] '); // Set a prefix.
