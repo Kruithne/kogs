@@ -1,0 +1,26 @@
+{
+	"name": "@kogs/pipeline",
+	"version": "0.0.1",
+	"description": "A pipeline for processing data through a series of functions.",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/Kruithne/kogs.git"
+	},
+	"bugs": "https://github.com/Kruithne/kogs/labels/module-pipeline",
+	"homepage": "https://github.com/Kruithne/kogs/tree/main/%40kogs/pipeline",
+	"main": "index.mjs",
+	"scripts": {
+		"test": "node test.mjs"
+	},
+	"author": {
+		"name": "Kruithne",
+		"email": "kruithne@gmail.com",
+		"url": "https://github.com/Kruithne"
+	},
+	"keywords": [
+		"pipeline",
+		"deployment",
+		"build"
+	]
+}

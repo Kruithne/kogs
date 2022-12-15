@@ -1,0 +1,47 @@
+# @kogs/pipeline
+[![License: MIT](https://img.shields.io/github/license/kruithne/kogs?style=flat-square)](https://github.com/Kruithne/kogs/blob/main/LICENSE)
+
+`@kogs/pipeline` provides an API for streaming data through a pipeline of functions, applying transformations in series. This module is based on the same concepts and API as `gulp`, implemented in a more simplistic manner.
+
+# Installation
+```
+npm install @kogs/pipeline
+```
+
+# Usage
+
+```js
+import { src, dest } from '@kogs/pipeline';
+src(...);
+
+// or
+
+import pipeline from '@kogs/pipeline';
+pipeline.src(...);
+```
+
+Using the same API as `gulp`, `@kogs/pipeline` provides a `src` function for loading files from disk. This function accepts a glob pattern and returns a `ReadableStream` of `FileObject` instances.
+
+```js
+const stream = src('src/**/*.js');
+```
+
+The `FileObject` has a few properties that are useful for working with files:
+
+```js
+{
+  path: string,
+  data: Buffer,
+  stats: fs.Stats
+}
+```
+
+For efficiency, the `data` property is lazy-loaded and will only be populated when the property is accessed. This allows the `FileObject` to be passed through a pipeline without having to load the file contents into memory.
+
+Since objects may be passed between numerous transformations in a pipeline, setting the `data` property will not update the file on disk. To write the file to disk, use the `dest` function.
+
+The `dest` function is used to write files to disk. This function accepts a path and returns a `ReadableStream` of `FileObject` instances with their `path` updated to reflect the new location.
+
+```js
+src('src/**/*.js').pipe(dest('dist'));
+```
