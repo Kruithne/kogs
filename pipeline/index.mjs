@@ -91,4 +91,20 @@ export function dest(dir) {
 	})
 }
 
-export default { src, dest };
+/**
+ * Run a function for each file in the stream.
+ * @param {function} fn 
+ * @returns {stream.Readable}
+ */
+export function transform(fn) {
+	return new stream.Transform({
+		objectMode: true,
+
+		async transform(chunk, encoding, callback) {
+			await fn(chunk);
+			callback(null, chunk);
+		}
+	});
+}
+
+export default { src, dest, transform };

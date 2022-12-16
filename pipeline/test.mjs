@@ -1,6 +1,6 @@
 import test from '@kogs/test';
 import assert from 'node:assert/strict';
-import { src, dest } from './index.mjs';
+import { src, dest, transform } from './index.mjs';
 import stream from 'node:stream';
 import fs from 'node:fs/promises';
 
@@ -103,6 +103,35 @@ stream.Readable.prototype.toArray = async function () {
 		}
 
 	}, 'test pipeline transformation');
+
+	await test.run(async () => {
+		const transformer = file => {
+			file.data = 'transformed data';
+		};
+
+		const files = await src('test/**/test*.js').pipe(transform(transformer)).toArray();
+
+		for (const file of files) {
+			assert.equal(typeof file.data, 'string', 'file.data should now be a string');
+			assert.equal(file.data, 'transformed data', 'file.data should be transformed');
+		}
+	}, 'test pipeline.transform() functionality');
+
+	await test.run(async () => {
+		const transformer = async file => {
+			file.data = 'transformed data';
+
+			// Wait for 100ms to simulate async operation.
+			await new Promise(resolve => setTimeout(resolve, 100));
+		};
+
+		const files = await src('test/**/test*.js').pipe(transform(transformer)).toArray();
+
+		for (const file of files) {
+			assert.equal(typeof file.data, 'string', 'file.data should now be a string');
+			assert.equal(file.data, 'transformed data', 'file.data should be transformed');
+		}
+	}, 'test pipeline.watch() async functionality');
 
 	await test.results();
 })();

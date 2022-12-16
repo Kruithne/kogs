@@ -45,3 +45,24 @@ The `dest` function is used to write files to disk. This function accepts a path
 ```js
 src('src/**/*.js').pipe(dest('dist'));
 ```
+For simple transformations, it may be easier to use the `transform` function. This function accepts a function that will be called for each file in the stream. This removes the need to create a `TransformStream` for simple transformations such as renaming files.
+
+```js
+src('src/**/*.js')
+  .pipe(transform(file => {
+	file.path = file.path.replace(/\.js$/, '.min.js');
+  }))
+  .pipe(dest('dist'));
+```
+> Note: The return value of the transformer function is not used; modify the `FileObject` instance directly.
+
+Additionally, the `transform` function supports asynchronous functions. This allows for more complex transformations that may require asynchronous operations such as reading from a database or making a network request.
+
+```js
+src('src/**/*.js')
+  .pipe(transform(async file => {
+	const data = await fetch('https://example.com/api');
+	file.data = Buffer.from(data);
+  }))
+  .pipe(dest('dist'));
+```
