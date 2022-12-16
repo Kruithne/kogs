@@ -166,4 +166,26 @@ export function merge(...streams) {
 	return merged;
 }
 
-export default { src, dest, transform, filter, ext, merge };
+/**
+ * Returns a promise that resolves when the stream ends.
+ * @param {stream.Readable} stream 
+ * @returns 
+ */
+export async function resolve(stream) {
+	return new Promise((resolve, reject) => {
+		// If the stream has already ended, resolve the promise immediately.
+		if (stream.ended) {
+			resolve();
+			return;
+		}
+	
+		// If the stream is paused, resume it.
+		if (stream.isPaused)
+			stream.resume();
+
+		stream.on('end', resolve);
+		stream.on('error', reject);
+	});
+}
+
+export default { src, dest, transform, filter, ext, merge, resolve };

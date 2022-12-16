@@ -88,3 +88,8 @@ const stream2 = src('src/**/*.css').pipe(sass());
 
 const upload = await merge(stream1, stream2).pipe(dest('dist'));
 ```
+When using `pipeline` in an async/await workflow, you may want to wait for a stream to complete before continuing. For this, the `resolve` function can be used. This function accepts a stream and returns a promise that resolves when the stream has completed.
+
+```js
+await resolve(src('src/**/*.js').pipe(terser()));
+```
