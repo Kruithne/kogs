@@ -1,6 +1,6 @@
 import test from '@kogs/test';
 import assert from 'node:assert/strict';
-import { src, dest, transform } from './index.mjs';
+import { src, dest, transform, filter } from './index.mjs';
 import stream from 'node:stream';
 import fs from 'node:fs/promises';
 
@@ -132,6 +132,15 @@ stream.Readable.prototype.toArray = async function () {
 			assert.equal(file.data, 'transformed data', 'file.data should be transformed');
 		}
 	}, 'test pipeline.watch() async functionality');
+
+	await test.run(async () => {
+		const files = await src('test/**/test*.js').pipe(filter(file => {
+			return file.path.endsWith('testB.js');
+		})).toArray();
+
+		assert.equal(files.length, 1, 'pipeline.filter() should return one item');
+		assert.equal(files[0].path, 'test/testB.js', 'first file returned should be test/testB.js');
+	}, 'test pipeline.filter() functionality');
 
 	await test.results();
 })();

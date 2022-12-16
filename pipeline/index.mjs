@@ -107,4 +107,20 @@ export function transform(fn) {
 	});
 }
 
-export default { src, dest, transform };
+/**
+ * Filter files in the stream based on the return value of the function.
+ * @param {function} fn 
+ * @returns {stream.Readable}
+ */
+export function filter(fn) {
+	return new stream.Transform({
+		objectMode: true,
+
+		async transform(chunk, encoding, callback) {
+			const result = await fn(chunk);
+			result ? callback(null, chunk) : callback();
+		}
+	});
+}
+
+export default { src, dest, transform, filter };

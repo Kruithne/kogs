@@ -66,3 +66,10 @@ src('src/**/*.js')
   }))
   .pipe(dest('dist'));
 ```
+To reduce a stream to a sub-set of files, the `filter` function can be used. This function accepts a function that will be called for each file in the stream. If the function returns `true`, the file will be passed through the stream. If the function returns `false`, the file will be dropped from the stream.
+
+```js
+src('src/**/*.js')
+  .pipe(filter(file => file.path.endsWith('.min.js')))
+  .pipe(dest('dist'));
+```
