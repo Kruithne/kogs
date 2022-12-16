@@ -123,4 +123,20 @@ export function filter(fn) {
 	});
 }
 
-export default { src, dest, transform, filter };
+/**
+ * Replaces the extension of all files in the stream.
+ * @param {string} ext 
+ * @returns {stream.Readable}
+ */
+export function ext(ext) {
+	return new stream.Transform({
+		objectMode: true,
+
+		transform(chunk, encoding, callback) {
+			chunk.path = chunk.path.replace(/\.[^.]+$/, ext);
+			callback(null, chunk);
+		}
+	});
+}
+
+export default { src, dest, transform, filter, ext };

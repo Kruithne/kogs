@@ -1,6 +1,6 @@
 import test from '@kogs/test';
 import assert from 'node:assert/strict';
-import { src, dest, transform, filter } from './index.mjs';
+import { src, dest, transform, filter, ext } from './index.mjs';
 import stream from 'node:stream';
 import fs from 'node:fs/promises';
 
@@ -141,6 +141,14 @@ stream.Readable.prototype.toArray = async function () {
 		assert.equal(files.length, 1, 'pipeline.filter() should return one item');
 		assert.equal(files[0].path, 'test/testB.js', 'first file returned should be test/testB.js');
 	}, 'test pipeline.filter() functionality');
+
+	await test.run(async () => {
+		const files = await src('test/**/test*.js').pipe(ext('.min.js')).toArray();
+
+		assert.equal(files.length, 2, 'pipeline.ext() should return two items');
+		assert.equal(files[0].path, 'test/test.min.js', 'first file returned should be test/test.min.js');
+		assert.equal(files[1].path, 'test/testB.min.js', 'second file returned should be test/testB.min.js');
+	}, 'test pipeline.ext() functionality');
 
 	await test.results();
 })();

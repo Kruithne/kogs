@@ -73,3 +73,10 @@ src('src/**/*.js')
   .pipe(filter(file => file.path.endsWith('.min.js')))
   .pipe(dest('dist'));
 ```
+When processing files in a pipeline, a common task is to change the extension of a file. To simplify this, the `ext` function can be used. This function accepts a new extension and will update the `path` property of each file in the stream.
+
+```js
+src('src/**/*.js')
+  .pipe(ext('.min.js'))
+  .pipe(dest('dist'));
+```
