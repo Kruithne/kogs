@@ -131,7 +131,7 @@ stream.Readable.prototype.toArray = async function () {
 			assert.equal(typeof file.data, 'string', 'file.data should now be a string');
 			assert.equal(file.data, 'transformed data', 'file.data should be transformed');
 		}
-	}, 'test pipeline.watch() async functionality');
+	}, 'test pipeline.transform() async functionality');
 
 	await test.run(async () => {
 		const files = await src('test/**/test*.js').pipe(filter(file => {
