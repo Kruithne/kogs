@@ -139,4 +139,31 @@ export function ext(ext) {
 	});
 }
 
-export default { src, dest, transform, filter, ext };
+/**
+ * Returns a stream that is the combination of all the streams passed in.
+ * @param  {...any} streams 
+ * @returns 
+ */
+export function merge(...streams) {
+	const merged = new stream.Readable({
+		objectMode: true,
+
+		read() {}
+	});
+
+	let streamsFinished = 0;
+
+	for (const stream of streams) {
+		stream.on('data', chunk => merged.push(chunk));
+		stream.on('end', () => {
+			streamsFinished++;
+			if (streamsFinished === streams.length)
+				merged.push(null);
+		});
+		stream.on('error', err => merged.emit('error', err));
+	}
+
+	return merged;
+}
+
+export default { src, dest, transform, filter, ext, merge };

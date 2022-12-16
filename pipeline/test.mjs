@@ -1,6 +1,6 @@
 import test from '@kogs/test';
 import assert from 'node:assert/strict';
-import { src, dest, transform, filter, ext } from './index.mjs';
+import { src, dest, transform, filter, ext, merge } from './index.mjs';
 import stream from 'node:stream';
 import fs from 'node:fs/promises';
 
@@ -149,6 +149,35 @@ stream.Readable.prototype.toArray = async function () {
 		assert.equal(files[0].path, 'test/test.min.js', 'first file returned should be test/test.min.js');
 		assert.equal(files[1].path, 'test/testB.min.js', 'second file returned should be test/testB.min.js');
 	}, 'test pipeline.ext() functionality');
+
+	await test.run(async () => {
+		const filesA = src('test/test.js');
+		const filesB = src('test/testB.js');
+
+		const files = await merge(filesA, filesB).toArray();
+
+		assert.equal(files.length, 2, 'pipeline.merge() should return a stream with two items');
+		assert.equal(files[0].path, 'test/test.js', 'first file returned should be test/test.js');
+		assert.equal(files[1].path, 'test/testB.js', 'second file returned should be test/testB.js');
+	}, 'test pipeline.merge() functionality');
+
+	await test.run(async () => {
+		const filesA = src('test/test.js').pipe(transform(file => {
+			// Wait for 100ms to simulate async operation.
+			return new Promise(resolve => setTimeout(resolve, 100));
+		}));
+
+		const filesB = src('test/testB.js').pipe(transform(file => {
+			// Wait for 250ms to simulate async operation.
+			return new Promise(resolve => setTimeout(resolve, 250));
+		}));
+
+		const files = await merge(filesA, filesB).toArray();
+
+		assert.equal(files.length, 2, 'pipeline.merge() should return a stream with two items');
+		assert.equal(files[0].path, 'test/test.js', 'first file returned should be test/test.js');
+		assert.equal(files[1].path, 'test/testB.js', 'second file returned should be test/testB.js');
+	}, 'test pipeline.merge() async functionality');
 
 	await test.results();
 })();

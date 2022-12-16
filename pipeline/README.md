@@ -80,3 +80,11 @@ src('src/**/*.js')
   .pipe(ext('.min.js'))
   .pipe(dest('dist'));
 ```
+It can sometimes be useful to merge two streams together. To do this, the `merge` function can be used. This function accepts a variable amount of streams and resolves them into a single stream.
+
+```js
+const stream1 = src('src/**/*.js').pipe(terser());
+const stream2 = src('src/**/*.css').pipe(sass());
+
+const upload = await merge(stream1, stream2).pipe(dest('dist'));
+```
