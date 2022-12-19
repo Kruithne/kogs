@@ -56,6 +56,34 @@ for await (const chunk of stream)
 // > bar
 // > baz
 ```
+#### `mergeStreams(streams: Array<ReadableStream>): ReadableStream`
+Creates a readable stream and merges all data from the provided streams into it.
+
+```js
+const streamA = obtainReadableStream(); // a, b, c
+const streamB = obtainReadableStream(); // d, e, f
+
+const merged = mergeStreams([streamA, streamB]);
+// merged => a, b, c, d, e, f
+```
+
+A useful example of this is merging multiple `Gulp` streams into a single stream for uniform processing.
+
+```js
+const jsFiles = gulp.src('src/**/*.js').pipe(terser());
+const cssFiles = gulp.src('src/**/*.css').pipe(sass());
+
+mergeStreams([jsFiles, cssFiles]).pipe(gulp.dest('dist'));
+```
+#### `filterStream(stream: ReadableStream, filter: (chunk: any) => boolean): ReadableStream`
+Creates a transform stream that filters out all chunks that do not pass the provided filter function.
+
+```js
+const stream = obtainReadableStream(); // a, b, c, d, e, f
+const filtered = filterStream(stream, chunk => chunk !== 'c');
+
+// filtered => a, b, d, e, f
+```
 # Unit Testing
 
 #### `test.run(fn: () => any, name?: string): Promise<void>`

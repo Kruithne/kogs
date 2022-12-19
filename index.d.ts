@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable, Transform, PassThrough } from 'stream';
 
 export interface Test {
 	_testID: number;
@@ -37,23 +37,38 @@ export const test: Test;
  * Creates a readable stream and pushes the given array into it.
  * @param {Array} input 
  * @param {boolean} [objectMode]
- * @returns {Promise<stream.Readable>}
+ * @returns {Promise<Readable>}
  */
 export function arrayToStream(input: any[], objectMode?: boolean): Promise<Readable>;
 
 /**
  * Consumes a stream and returns an array of its contents.
- * @param {stream.Readable} input 
+ * @param {Readable} input 
  * @returns {Promise<Array>}
  */
 export function streamToArray(input: Readable): Promise<any[]>;
 
 /**
  * Consumes a stream and returns a buffer of its contents.
- * @param {stream.Readable} input 
+ * @param {Readable} input 
  * @returns {Promise<Buffer>}
  */
 export function streamToBuffer(input: Readable): Promise<Buffer>;
+
+/**
+ * Provides a stream.Transform that filters out chunks that
+ * do not pass the given filteirng function.
+ * @param {function} fn 
+ * @returns {Transform}
+ */
+export function filterStream(fn: (chunk: any) => Promise<boolean>): Transform;
+
+/**
+ * Consumes multiple streams and merges them into one.
+ * @param  {...Readable} streams 
+ * @returns {PassThrough}
+ */
+export function mergeStreams(...streams: Array<Readable>): PassThrough;
 
 /**
  * Renders a table in Markdown format.

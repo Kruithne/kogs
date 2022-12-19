@@ -1,4 +1,4 @@
-import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown } from './index.mjs';
+import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown, mergeStreams, filterStream } from './index.mjs';
 import { Readable } from 'node:stream';
 import assert from 'node:assert/strict';
 
@@ -55,6 +55,33 @@ test.run(async () => {
 	const output = Buffer.concat(buffers).toString();
 	assert.deepStrictEqual(output, input.join(''), 'arrayToStream should return a stream of the array contents');
 }, 'test arrayToStream functionality with objectMode=false');
+
+test.run(async () => {
+	const stream1Contents = ['a', 'b', 'c'];
+	const stream2Contents = ['d', 'e', 'f'];
+
+	const stream1 = await arrayToStream(stream1Contents, true);
+	const stream2 = await arrayToStream(stream2Contents, true);
+
+	const merged = await mergeStreams(stream1, stream2);
+	const mergedContents = await streamToArray(merged);
+
+	assert.deepStrictEqual(mergedContents, [...stream1Contents, ...stream2Contents]);
+}, 'test mergeStreams() functionality');
+
+test.run(async () => {
+	const streamContents = ['a', 'b', 'c'];
+	const stream1 = await arrayToStream(streamContents, true);
+
+	const filtered = stream1.pipe(filterStream(async content => {
+		// Wait for 100ms to simulate a slow filter and test async functionality.
+		await new Promise(resolve => setTimeout(resolve, 100));
+		return content === 'a';
+	}));
+
+	const filteredContents = await streamToArray(filtered);
+	assert.deepStrictEqual(filteredContents, ['a']);
+}, 'test filterStream() functionality');
 
 test.run(() => {
 	assert.equal(typeof renderMarkdown, 'function', 'default export from markdown should be a function');

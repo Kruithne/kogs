@@ -1,6 +1,7 @@
 'use strict';
 
-import { Readable } from 'node:stream';
+import { Readable, Transform, PassThrough } from 'node:stream';
+import { readFile } from 'node:fs/promises';
 
 export const test = {
 	_testID: 1,
@@ -170,6 +171,46 @@ export async function streamToBuffer(input) {
 	}
 
 	return Buffer.concat(output);
+}
+
+/**
+ * Provides a stream.Transform that filters out chunks that
+ * do not pass the given filteirng function.
+ * @param {function} fn 
+ * @returns {stream.Transform}
+ */
+export function filterStream(fn) {
+	return new Transform({
+		objectMode: true,
+		async transform(chunk, encoding, callback) {
+			if (await fn(chunk))
+				this.push(chunk);
+
+			callback();
+		}
+	});
+}
+
+/**
+ * Consumes multiple streams and merges them into one.
+ * @param  {...stream.Readable} streams 
+ * @returns {stream.PassThrough}
+ */
+export async function mergeStreams(...streams) {
+	const merged = new PassThrough({ objectMode: true });
+
+	let ended = 0;
+	for (const stream of streams) {
+		for await (const data of stream)
+			merged.write(data);
+
+		ended += 1;
+
+		if (ended === streams.length)
+			merged.end();
+	}
+
+	return merged;
 }
 
 /**
