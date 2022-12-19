@@ -2,7 +2,7 @@ import { test, streamToArray, streamToBuffer, arrayToStream } from './index.mjs'
 import { Readable } from 'node:stream';
 import assert from 'node:assert/strict';
 
-await test.run(async () => {
+test.run(async () => {
 	const input = [1, 2, 3, 4, 5];
 	const stream = new Readable({
 		objectMode: true,
@@ -17,7 +17,7 @@ await test.run(async () => {
 	assert.deepStrictEqual(output, input, 'streamToArray should return an array of the stream contents');
 }, 'test streamToArray functionality');
 
-await test.run(async () => {
+test.run(async () => {
 	const input = ['foo', 'bar', 'baz'];
 	const stream = new Readable({
 		read() {
@@ -33,7 +33,7 @@ await test.run(async () => {
 	assert.deepStrictEqual(buffer, expected, 'streamToBuffer should return a buffer of the stream contents');
 }, 'test streamToBuffer functionality');
 
-await test.run(async () => {
+test.run(async () => {
 	const input = [1, 2, 3, 4, 5];
 	const stream = await arrayToStream(input, true);
 	
@@ -44,7 +44,7 @@ await test.run(async () => {
 	assert.deepStrictEqual(output, input, 'arrayToStream should return a stream of the array contents');
 }, 'test arrayToStream functionality with objectMode=true');
 
-await test.run(async () => {
+test.run(async () => {
 	const input = ['foo', 'bar', 'baz', 'qux'];
 	const stream = await arrayToStream(input, false);
 	
