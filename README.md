@@ -7,14 +7,13 @@ The original design behind `kogs` was to provide a monorepo of small modules tha
 
 `kogs` is designed to be as lightweight as possible, with no dependencies, as well as being tree-shakeable, so only the functions you use will be included in your final bundle.
 
-## Installation
+# Installation
 
 ```
 npm install kogs
 ```
 
-## Usage
-### General Utility Functions
+# General Utility Functions
 
 #### `streamToArray(stream: ReadableStream): Promise<Array>`
 Consumes all data from a readable stream and returns it as an array.
@@ -57,9 +56,7 @@ for await (const chunk of stream)
 // > bar
 // > baz
 ```
-
----
-### Unit Testing
+# Unit Testing
 
 #### `test.run(fn: () => any, name?: string): Promise<void>`
 Runs a unit test, contained inside a function (which can be asynchronous). If the function throws an error, the test will fail.
@@ -122,8 +119,116 @@ const output = await test.capture(async () => {
 
 // output => { stdout: ['foo'], stderr: ['bar'] }
 ```
----
+# Markdown
+The `renderMarkdown()` function exported by `kogs` can take data in various formats and produce a string containing Markdown-formatted table.
 
+> Array: If you provide a single-dimensional array, it will be treated as a single row of data. If you provide a two-dimensional array, each sub-array will be treated as an individual row of data.
+
+> Object: If you provide an object, you should set the `data` property to an array of data. This document outlines other properties you can provide to customize the output.
+```js
+import { renderMarkdown } from 'kogs';
+
+const md = renderMarkdown(
+	[
+		['Thor', 'Ironman', 'Loki'],
+		['Blackwidow', 'Hulk', 'Hawkeye']
+	]
+);
+
+// | Column 1   | Column 2 | Column 3 |
+// | ---------- | -------- | -------- |
+// | Thor       | Ironman  | Loki     |
+// | Blackwidow | Hulk     | Hawkeye  |
+```
+
+**Custom Headers**
+
+By default, headers will be automatically generated for the table. If you want to specify your own headers, you can do so by passing an array of strings as `options.headers`.
+
+> Note: If you don't provide enough headers to cover all columns, the remaining headers will be automatically generated.
+
+> Note: If you provide more headers than columns, the additionally provided headers will be included and rows will be padded with empty cells.
+```js
+const md = renderMarkdown({
+	headers: ['Header A', 'Header B', 'Header C'],
+	data: [
+		['Harry', 'Ron', 'Ginny'],
+		['Luna', 'Hagrid', 'Dobby']
+	]
+});
+
+// | Header A | Header B | Header C |
+// | -------- | -------- | -------- |
+// | Harry    | Ron      | Ginny    |
+// | Luna     | Hagrid   | Dobby    |
+```
+
+**Custom Header Prefix**
+
+If you don't want to specify your own headers, but you want to customize the prefix used to generate the headers, you can do so by passing a string as `options.headerPrefix`.
+
+```js
+const md = renderMarkdown({
+	headerPrefix: 'Foo ',
+	data: [
+		['Harry', 'Ron', 'Ginny'],
+		['Luna', 'Hagrid', 'Dobby']
+	]
+});
+
+// | Foo 1 | Foo 2  | Foo 3 |
+// | ----- | -----  | ----- |
+// | Harry | Ron    | Ginny |
+// | Luna  | Hagrid | Dobby |
+```
+
+**Minimal Output**
+
+By default, the markdown output is formatted with padding to create human readable tables. If you want to output the table with minimal formatting, you can do so by passing `options.minimal` as `true`.
+
+```js
+const md = renderMarkdown({
+	minimalOutput: true,
+	data: [
+		['Harry', 'Ron', 'Ginny'],
+		['Luna', 'Hagrid', 'Dobby']
+	]
+});
+
+// |Column 1|Column 2|Column 3|
+// |---|---|---|
+// |Harry|Ron|Ginny|
+// |Luna|Hagrid|Dobby|
+```
+
+**Content Alignment**
+
+To align the content of fields, you can provide `options.alignment` which can be a string (`left`, `center`, or `right`) or an array of strings. If you provide a string, it will be applied to all columns. If you provide an array, each string will be applied to the corresponding column.
+
+> Note: Only the first letter is used to determine the alignment, allowing for a short-hand syntax of `l`, `c`, or `r`.
+
+```js
+const md = renderMarkdown({
+	alignment: ['l', 'c', 'r'],
+	data: [
+		['Harry', 'Ron', 'Ginny'],
+		['Luna', 'Hagrid', 'Dobby']
+	];
+});
+
+// | Column 1 | Column 2 | Column 3 |
+// | :------- | :------: | -------: |
+// | Harry    |  Ron     | Ginny    |
+// | Luna     |  Hagrid  | Dobby    |
+```
+
+**Miscellaneous Options**
+```js
+{
+	// The character(s) to use to separate rows.
+	lineSeparator: '\r\n',
+}
+```
 
 ## Legal
 All modules in this repository are licensed under the MIT license. See [LICENSE](LICENSE) for more information.

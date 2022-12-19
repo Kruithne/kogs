@@ -54,4 +54,14 @@ export function streamToArray(input: Readable): Promise<any[]>;
  * @returns {Promise<Buffer>}
  */
 export function streamToBuffer(input: Readable): Promise<Buffer>;
-  
+
+/**
+ * Renders a table in Markdown format.
+ * @param {array|object} optionsOrData
+ * @param {array} optionsOrData.data
+ * @param {array} optionsOrData.headers
+ * @param {boolean} optionsOrData.minimalOutput
+ * @param {string} optionsOrData.delimiter
+ * @returns {string}
+ */
+export function renderMarkdown(optionsOrData: Array<any> | { data: Array<any>, headers: Array<string>, minimalOutput: boolean, delimiter: string }): string;
