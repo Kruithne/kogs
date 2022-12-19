@@ -1,0 +1,26 @@
+{
+	"name": "kogs",
+	"version": "0.0.1",
+	"description": "Utility Library",
+	"license": "MIT",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/Kruithne/kogs.git"
+	},
+	"bugs": "https://github.com/Kruithne/kogs/issues",
+	"homepage": "https://github.com/Kruithne/kogs",
+	"main": "index.mjs",
+	"scripts": {
+		"test": "node test.mjs"
+	},
+	"author": {
+		"name": "Kruithne",
+		"email": "kruithne@gmail.com",
+		"url": "https://github.com/Kruithne"
+	},
+	"keywords": [
+		"utility",
+		"library"
+	]
+}
