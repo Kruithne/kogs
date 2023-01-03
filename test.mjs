@@ -639,7 +639,7 @@ await test.run(() => {
 		assert.equal(stdout.shift(), 'Hello, world! How are you?\n');
 
 		// log.pc should be picocolors
-		//assert.equal(log.pc, pc, 'log.pc should be picocolors');
+		assert.equal(log.pc, pc, 'log.pc should be picocolors');
 	});
 }, 'test log.write() basic functionality');
 

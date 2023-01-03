@@ -378,6 +378,14 @@ class Log {
 	}
 
 	/**
+	 * Returns the picocolors module.
+	 * @returns {object}
+	 */
+	get pc() {
+		return pc;
+	}
+
+	/**
 	 * Write a message to the console.
 	 * @param {string} message 
 	 * @param {...any} args
