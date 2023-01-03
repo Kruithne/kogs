@@ -1,6 +1,6 @@
 {
 	"name": "kogs",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Utility Library",
 	"license": "MIT",
 	"type": "module",
@@ -22,5 +22,8 @@
 	"keywords": [
 		"utility",
 		"library"
-	]
+	],
+	"dependencies": {
+		"picocolors": "^1.0.0"
+	}
 }

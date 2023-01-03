@@ -5,7 +5,7 @@
 
 The original design behind `kogs` was to provide a monorepo of small modules that could be used independently. I've since abandoned this in favor of a single module that provides the functionality all in one place.
 
-`kogs` is designed to be as lightweight as possible, with no dependencies, as well as being tree-shakeable, so only the functions you use will be included in your final bundle.
+`kogs` is designed to be as lightweight as possible, with minimal dependencies, as well as being tree-shakeable, so only the functions you use will be included in your final bundle.
 
 # Installation
 
@@ -258,7 +258,86 @@ const md = renderMarkdown({
 }
 ```
 
-## Legal
+# Logging
+```js
+import log from '@kogs/logger';
+```
+
+**Basic Usage**
+```js
+log.write('Hello, world');
+// > Hello, world
+
+// printf style string formatting via util.format
+// See: https://nodejs.org/api/util.html#utilformatformat-args
+
+log.write('I have %d barrels of %s', 3, 'apples');
+// > I have 3 barrels of apples
+```
+**Fluent API Method Chaining**
+```js
+log.write('Before').indent().write('After');
+// > Before
+// > 	After
+```
+**Logging Levels / Decorators**
+```js
+log.info('This is some information');
+// stdout > [i] This is some information
+
+log.warn('This is a warning');
+// stderr > [!] This is a warning
+
+log.success('This is a successful message');
+// stdout > [✓] This is a successful message
+
+log.error('This is an error message');
+// stderr > [x] This is an error message
+
+log.custom('foo', '[?] ', process.stderr, (e) => '<' + e + '>');
+log.foo('This is a {custom} message');
+// stderr > [?] This is a <custom> message
+
+// log.pc is a reference to picocolors for color decorators.
+// See: https://github.com/alexeyraspopov/picocolors
+log.custom('foo', '[?] ', process.stdout, log.pc.red);
+```
+**Indentation**
+```js
+log.indent(); // Add a single layer of indentation
+log.indent(2); // Add X levels of indentation
+log.dedent(); // Remove a single layer of indentation
+log.dedent(2); // Remove X levels of identation
+log.clearIndent(); // Remove all levels of indentation
+log.setIndentString('\t'); // Sets indentation string (\t by default)
+```
+**Instanced Usage**
+```js
+// Unique logging instances can be created which do not inherit or affect other logging instances, including the global one.
+const myLogger = log.instance();
+myLogger.indent().write('Foo');
+log.write('Bar'); // Global logger unaffected.
+
+// >     Foo
+// > Bar
+```
+**User Prompt**
+```js
+// Prompt the user for input.
+const input = await log.prompt('Enter a value: ');
+```
+**Miscellanous**
+```js
+log.setPrefix('[Fudge] '); // Set a prefix.
+log.write('Hello!');
+// > [Fudge] Hello!
+
+log.setPrefix(); // Reset to no prefix.
+log.write('Hello!');
+// > Hello!
+```
+
+# Legal
 All modules in this repository are licensed under the MIT license. See [LICENSE](LICENSE) for more information.
 
 All code in this repository is provided as-is, without warranty of any kind. I am not responsible for any damage caused by the use of this code.
