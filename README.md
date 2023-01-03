@@ -319,7 +319,7 @@ const md = renderMarkdown({
 
 # Logging
 ```js
-import log from '@kogs/logger';
+import { log } from 'kogs';
 ```
 
 **Basic Usage**
