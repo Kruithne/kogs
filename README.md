@@ -84,6 +84,65 @@ const filtered = filterStream(stream, chunk => chunk !== 'c');
 
 // filtered => a, b, d, e, f
 ```
+
+#### `formatDate(format: string, date: Date|number): string`
+Formats a date using a provided format string, similar to the [php `date()` function](https://www.php.net/manual/en/function.date.php) The format string can contain any of the following tokens:
+
+| Format | Description |
+| --- | --- |
+| d | Day of the month (01-31) (2 digits) |
+| D | Day of the week (Mon-Sun) (3 letters) | 
+| j | Day of the month (1-31) (1 or 2 digits) | 
+| l | Day of the week (Monday-Sunday) (full name) |
+| N | ISO-8601 numeric representation of the day of the week (1-7) | 
+| S | English ordinal suffix for the day of the month (2 characters) | 
+| w | Numeric representation of the day of the week (0-6) | 
+| z | The day of the year (0-365) | 
+| F | Month (January-December) (full name) | 
+| m | Numeric representation of a month (01-12) (2 digits) | 
+| M | Month (Jan-Dec) (3 letters) | 
+| n | Numeric representation of a month (1-12) (1 or 2 digits) |
+| t | Number of days in the given month (28-31) | 
+| L | Whether it's a leap year (1 or 0) | 
+| Y | A full numeric representation of a year (4 digits) | 
+| y | A two digit representation of a year (2 digits) | 
+| a | Lowercase Ante meridiem and Post meridiem (am or pm) | 
+| A | Uppercase Ante meridiem and Post meridiem (AM or PM) | 
+| g | 12-hour format of an hour (1-12) (1 or 2 digits) | 
+| G | 24-hour format of an hour (0-23) (1 or 2 digits) | 
+| h | 12-hour format of an hour (01-12) (2 digits) |
+| H | 24-hour format of an hour (00-23) (2 digits) | 
+| i | Minutes with leading zeros (00-59) (2 digits) | 
+| s | Seconds with leading zeros (00-59) (2 digits) |
+
+Below is an example of formatting a date using the `Y-m-d H:i:s` format.
+```js
+import { formatDate } from 'kogs';
+
+const date = new Date(2020, 0, 1, 12, 0, 0);
+const formatted = formatDate('Y-m-d H:i:s', date);
+
+// formatted => 2020-01-01 12:00:00
+```
+
+Characters can be escaped using a backslash.
+
+```js
+const date = new Date(2020, 0, 1, 12, 0, 0);
+const formatted = formatDate('Y-m-d \\H:\\i:\\s', date);
+
+// formatted => 2020-01-01 H:i:s
+```
+Additionally, if the `date` parameter is a number, it will be treated as a UNIX timestamp. If you pass a string instead, it will be parsed using `Date.parse()`.
+
+```js
+const formatted = formatDate('Y-m-d H:i:s', 1577836800);
+// formatted => 2020-01-01 00:00:00
+
+const formatted = formatDate('Y-m-d H:i:s', '2019-01-01 00:00:00');
+// formatted => 2019-01-01 00:00:00
+```
+
 # Unit Testing
 
 #### `test.run(fn: () => any, name?: string): Promise<void>`

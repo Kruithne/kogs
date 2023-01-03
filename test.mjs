@@ -1,4 +1,4 @@
-import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown, mergeStreams, filterStream, log } from './index.mjs';
+import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown, mergeStreams, filterStream, log, formatDate } from './index.mjs';
 import { Readable } from 'node:stream';
 import assert from 'node:assert/strict';
 import pc from 'picocolors';
@@ -821,5 +821,80 @@ await test.run(() => {
 		assert.equal(stdout.shift(), '[\x1B[32m✓\x1B[39m] This is a \x1B[32msuccess\x1B[39m message about something!\n');
 	});
 }, 'test log builtin logging levels');
+
+await test.run(() => {
+	// Create a Date instance for 13th December 1993, 16:30:28
+	const date = new Date(1993, 11, 5, 16, 30, 28);
+
+	/*
+	* d - Day of the month (01-31) (2 digits)
+	* D - Day of the week (Mon-Sun) (3 letters)
+	* j - Day of the month (1-31) (1 or 2 digits)
+	* l - Day of the week (Monday-Sunday) (full name)
+	* N - ISO-8601 numeric representation of the day of the week (1-7)
+	* S - English ordinal suffix for the day of the month (2 characters)
+	* w - Numeric representation of the day of the week (0-6)
+	* z - The day of the year (0-365)
+	* F - Month (January-December) (full name)
+	* m - Numeric representation of a month (01-12) (2 digits)
+	* M - Month (Jan-Dec) (3 letters)
+	* n - Numeric representation of a month (1-12) (1 or 2 digits)
+	* t - Number of days in the given month (28-31)
+	* L - Whether it's a leap year (1 or 0)
+	* Y - A full numeric representation of a year (4 digits)
+	* y - A two digit representation of a year (2 digits)
+	* a - Lowercase Ante meridiem and Post meridiem (am or pm)
+	* A - Uppercase Ante meridiem and Post meridiem (AM or PM)
+	* g - 12-hour format of an hour (1-12) (1 or 2 digits)
+	* G - 24-hour format of an hour (0-23) (1 or 2 digits)
+	* h - 12-hour format of an hour (01-12) (2 digits)
+	* H - 24-hour format of an hour (00-23) (2 digits)
+	* i - Minutes with leading zeros (00-59) (2 digits)
+	* s - Seconds with leading zeros (00-59) (2 digits)
+	*/
+
+	assert.equal(formatDate('d', date), '05', 'formatDate(): "d" should return the day of the month (2 digits)');
+	assert.equal(formatDate('D', date), 'Sun', 'formatDate(): "D" should return the day of the week (3 letters)');
+	assert.equal(formatDate('j', date), '5', 'formatDate(): "j" should return the day of the month (1 digit)');
+	assert.equal(formatDate('l', date), 'Sunday', 'formatDate(): "l" should return the day of the week (full)');
+	assert.equal(formatDate('N', date), '7', 'formatDate(): "N" should return the ISO-8601 numeric representation of the day of the week (1 digit)');
+	assert.equal(formatDate('S', date), 'th', 'formatDate(): "S" should return the English ordinal suffix for the day of the month (2 letters)');
+	assert.equal(formatDate('w', date), '0', 'formatDate(): "w" should return the numeric representation of the day of the week (1 digit)');
+	assert.equal(formatDate('z', date), '338', 'formatDate(): "z" should return the day of the year (3 digits)');
+	assert.equal(formatDate('z', new Date(1993, 0, 1)), '0', 'formatDate(): "z" should return the day of the year (3 digits)');
+	assert.equal(formatDate('z', new Date(1993, 11, 31)), '364', 'formatDate(): "z" should return the day of the year (3 digits)');
+	assert.equal(formatDate('F', date), 'December', 'formatDate(): "F" should return the month (full)');
+	assert.equal(formatDate('m', date), '12', 'formatDate(): "m" should return the month (2 digits)');
+	assert.equal(formatDate('M', date), 'Dec', 'formatDate(): "M" should return the month (3 letters)');
+	assert.equal(formatDate('n', date), '12', 'formatDate(): "n" should return the month (1 digit)');
+	assert.equal(formatDate('t', date), '31', 'formatDate(): "t" should return the number of days in the given month (2 digits)');
+	assert.equal(formatDate('L', date), '0', 'formatDate(): "L" should return whether it\'s a leap year (1 digit)');
+	assert.equal(formatDate('Y', date), '1993', 'formatDate(): "Y" should return the full numeric representation of a year (4 digits)');
+	assert.equal(formatDate('y', date), '93', 'formatDate(): "y" should return the two digit representation of a year (2 digits)');
+	assert.equal(formatDate('a', date), 'pm', 'formatDate(): "a" should return the lowercase Ante meridiem and Post meridiem (2 letters)');
+	assert.equal(formatDate('A', date), 'PM', 'formatDate(): "A" should return the uppercase Ante meridiem and Post meridiem (2 letters)');
+	assert.equal(formatDate('g', date), '4', 'formatDate(): "g" should return the 12-hour format of an hour (1 digit)');
+	assert.equal(formatDate('G', date), '16', 'formatDate(): "G" should return the 24-hour format of an hour (2 digits)');
+	assert.equal(formatDate('h', date), '04', 'formatDate(): "h" should return the 12-hour format of an hour (2 digits)');
+	assert.equal(formatDate('H', date), '16', 'formatDate(): "H" should return the 24-hour format of an hour (2 digits)');
+	assert.equal(formatDate('i', date), '30', 'formatDate(): "i" should return the minutes with leading zeros (2 digits)');
+	assert.equal(formatDate('s', date), '28', 'formatDate(): "s" should return the seconds with leading zeros (2 digits)');
+
+	// Test character escaping.
+	assert.equal(formatDate('\\Y\\m\\d', date), 'Ymd', 'formatDate(): "\Y\m\d" should return "Ymd"');
+
+	// Test combination: Y-m-d H:i:s
+	assert.equal(formatDate('Y-m-d H:i:s', date), '1993-12-05 16:30:28', 'formatDate(): "Y-m-d H:i:s" should return the full date and time');
+
+	// Test combination: l \t\h\e jS
+	assert.equal(formatDate('l \\t\\h\\e jS', date), 'Sunday the 5th', 'formatDate(): "l \t\h\e jS" should return "Sunday the 5th"');
+
+	// Test providing a UNIX timestamp as the date.
+	assert.equal(formatDate('Y-m-d', 1234567890), '2009-02-13', 'formatDate(): "Y-m-d" should return "2009-02-13"');
+
+	// Test providing a date string as the date.
+	assert.equal(formatDate('Y-m-d', '2009-02-13'), '2009-02-13', 'formatDate(): "Y-m-d" should return "2009-02-13"');
+
+}, 'test formatDate()');
 
 await test.results();

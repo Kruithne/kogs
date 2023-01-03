@@ -363,6 +363,156 @@ export function renderMarkdown(optionsOrData) {
 	return output.join(options.lineSeparator);
 };
 
+const _date_longDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const _date_longMonth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/**
+ * Formats a given date using the given format string.
+ * This function closely matches the behavior of PHP's date() function (https://www.php.net/manual/en/datetime.format.php).
+ * Individual characters in the format can be escaped with a backslash.
+ * The following characters in a format string are replaced with the corresponding date/time values:
+ * d - Day of the month (01-31) (2 digits)
+ * D - Day of the week (Mon-Sun) (3 letters)
+ * j - Day of the month (1-31) (1 or 2 digits)
+ * l - Day of the week (Monday-Sunday) (full name)
+ * N - ISO-8601 numeric representation of the day of the week (1-7)
+ * S - English ordinal suffix for the day of the month (2 characters)
+ * w - Numeric representation of the day of the week (0-6)
+ * z - The day of the year (0-365)
+ * F - Month (January-December) (full name)
+ * m - Numeric representation of a month (01-12) (2 digits)
+ * M - Month (Jan-Dec) (3 letters)
+ * n - Numeric representation of a month (1-12) (1 or 2 digits)
+ * t - Number of days in the given month (28-31)
+ * L - Whether it's a leap year (1 or 0)
+ * Y - A full numeric representation of a year (4 digits)
+ * y - A two digit representation of a year (2 digits)
+ * a - Lowercase Ante meridiem and Post meridiem (am or pm)
+ * A - Uppercase Ante meridiem and Post meridiem (AM or PM)
+ * g - 12-hour format of an hour (1-12) (1 or 2 digits)
+ * G - 24-hour format of an hour (0-23) (1 or 2 digits)
+ * h - 12-hour format of an hour (01-12) (2 digits)
+ * H - 24-hour format of an hour (00-23) (2 digits)
+ * i - Minutes with leading zeros (00-59) (2 digits)
+ * s - Seconds with leading zeros (00-59) (2 digits)
+ * @param {string} format 
+ * @param {Date|number|string} [date]
+ * @returns {string}
+ */
+export function formatDate(format, date) {
+	// If date is undefined, use current date.
+	if (date === undefined)
+		date = new Date();
+
+	// If date is a number, treat it as a UNIX timestamp.
+	if (typeof date === 'number')
+		date = new Date(date * 1000);
+
+	// If date is a string, treat it as a date string.
+	if (typeof date === 'string')
+		date = new Date(date);
+
+	const _date = date.getDate();
+	const _day = date.getDay();
+	const _month = date.getMonth();
+	const _year = date.getFullYear();
+	const _hours = date.getHours();
+	const _minutes = date.getMinutes();
+	const _seconds = date.getSeconds();
+
+	let out = '';
+	let skip = false;
+	for (let i = 0, n = format.length; i < n; i++) {
+		let char = format[i];
+
+		if (!skip) {
+			switch (char) {
+				// Escape character.
+				case '\\': skip = true; continue;
+
+				// Day of the month (01-31) (2 digits)
+				case 'd': char = _date.toString().padStart(2, '0'); break;
+
+				// Day of the week (Mon-Sun) (3 letters)
+				case 'D': char = _date_longDays[_day].substring(0, 3); break;
+
+				// Day of the month (1-31) (1 or 2 digits)
+				case 'j': char = _date.toString(); break;
+
+				// Day of the week (Monday-Sunday) (full name)
+				case 'l': char = _date_longDays[_day]; break;
+
+				// ISO-8601 numeric representation of the day of the week (1-7)
+				// 1 for Monday, 7 for Sunday
+				case 'N': char = (_day + 6) % 7 + 1; break;
+
+				// English ordinal suffix for the day of the month (2 characters)
+				case 'S': char = _date % 10 === 1 ? 'st' :_date % 10 === 2 ? 'nd' : _date % 10 === 3 ? 'rd' : 'th'; break;
+
+				// Numeric representation of the day of the week (0-6)
+				case 'w': char = _day.toString(); break;
+
+				// The day of the year (0-365)
+				case 'z': char = Math.floor((date - new Date(_year, 0, 1)) / 86400000); break;
+
+				// Month (January-December) (full name)
+				case 'F': char = _date_longMonth[_month]; break;
+
+				// Numeric representation of a month (01-12) (2 digits)
+				case 'm': char = (_month + 1).toString().padStart(2, '0'); break;
+
+				// Month (Jan-Dec) (3 letters)
+				case 'M': char = _date_longMonth[_month].substring(0, 3); break;
+
+				// Numeric representation of a month (1-12) (1 or 2 digits)
+				case 'n': char = (_month + 1).toString(); break;
+
+				// Number of days in the given month (28-31)
+				case 't': char = new Date(_year, _month + 1, 0).getDate().toString(); break;
+
+				// Whether it's a leap year (1 or 0)
+				case 'L': char = (_year % 4 === 0 && _year % 100 !== 0) || _year % 400 === 0 ? '1' : '0'; break;
+
+				// A full numeric representation of a year (4 digits)
+				case 'Y': char = _year.toString(); break;
+
+				// A two digit representation of a year (2 digits)
+				case 'y': char = _year.toString().substring(2); break;
+
+				// Lowercase Ante meridiem and Post meridiem (am or pm)
+				case 'a': char = _hours < 12 ? 'am' : 'pm'; break;
+
+				// Uppercase Ante meridiem and Post meridiem (AM or PM)
+				case 'A': char = _hours < 12 ? 'AM' : 'PM'; break;
+
+				// 12-hour format of an hour (1-12) (1 or 2 digits)
+				case 'g': char = (_hours % 12 || 12).toString(); break;
+
+				// 24-hour format of an hour (0-23) (1 or 2 digits)
+				case 'G': char = _hours.toString(); break;
+
+				// 12-hour format of an hour (01-12) (2 digits)
+				case 'h': char = (_hours % 12 || 12).toString().padStart(2, '0'); break;
+
+				// 24-hour format of an hour (00-23) (2 digits)
+				case 'H': char = _hours.toString().padStart(2, '0'); break;
+
+				// Minutes with leading zeros (00-59) (2 digits)
+				case 'i': char = _minutes.toString().padStart(2, '0'); break;
+
+				// Seconds with leading zeros (00-59) (2 digits)
+				case 's': char = _seconds.toString().padStart(2, '0'); break;
+			}
+		} else {
+			skip = false;
+		}
+
+		out += char;
+	}
+
+	return out;
+}
+
 class Log {
 	_lineTerminator = '\n';
 	_indentString = '\t';
