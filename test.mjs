@@ -1,4 +1,4 @@
-import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown, mergeStreams, filterStream, log, formatDate } from './index.mjs';
+import { test, streamToArray, streamToBuffer, arrayToStream, renderMarkdown, mergeStreams, filterStream, log, Log, formatDate } from './index.mjs';
 import { Readable } from 'node:stream';
 import assert from 'node:assert/strict';
 import pc from 'picocolors';
@@ -601,16 +601,16 @@ await test.run(() => {
 
 await test.run(() => {
 	test.capture(() => {
-		const instance = log.instance();
+		const instance = new Log();
 
-		assert.notEqual(instance, log, 'instance() should not return global log instance');
-		assert.ok(instance instanceof log.constructor, 'instance() should return a new log instance');
+		assert.notEqual(instance, log, 'new Log() should not return global log instance');
+		assert.ok(instance instanceof log.constructor, 'new Log() should return a new log instance');
 	});
-}, 'test log.instance()');
+}, 'test new Log()');
 
 await test.run(() => {
 	test.capture(() => {
-		const instance = log.instance();
+		const instance = new Log();
 		assert.ok(instance.write('test') === instance, 'write() should return the log instance');
 		assert.ok(instance.indent() === instance, 'indent() should return the log instance');
 		assert.ok(instance.dedent() === instance, 'dedent() should return the log instance');
@@ -670,7 +670,7 @@ await test.run(() => {
 
 		assert.equal(stdout.shift(), 'Hello, world!\r\n');
 
-		const instance = log.instance();
+		const instance = new Log();
 		assert.equal(instance._lineTerminator, '\n', 'Instance should not inherit line terminator');
 
 		log.setLineTerminator('\n');
@@ -740,7 +740,7 @@ await test.run(() => {
 		log.indent().write('Hello, world!');
 		assert.equal(stdout.shift(), '  Hello, world!\n');
 
-		const instance = log.instance();
+		const instance = new Log();
 		assert.equal(instance._indentString, '\t', 'Instance should not inherit indent string');
 
 		log.setIndentString('\t');
@@ -752,7 +752,7 @@ await test.run(() => {
 
 await test.run(() => {
 	test.capture((stdout, stderr) => {
-		const instance = log.instance();
+		const instance = new Log();
 		const fn = instance.custom('test', '[?] ', process.stdout);
 
 		assert.equal(typeof fn, 'function', 'custom() should return a function');
@@ -791,7 +791,7 @@ await test.run(() => {
 
 await test.run(() => {
 	test.capture((stdout) => {
-		const instance = log.instance();
+		const instance = new Log();
 		instance.custom('test', '[{test}] ', process.stdout, e => e.toUpperCase());
 
 		instance.test('Hello, world!');
@@ -806,7 +806,7 @@ await test.run(() => {
 
 await test.run(() => {
 	test.capture((stdout, stderr) => {
-		const instance = log.instance();
+		const instance = new Log()
 
 		instance.info('This is an {information} message about %s!', 'something');
 		assert.equal(stdout.shift(), '[\x1B[36mi\x1B[39m] This is an \x1B[36minformation\x1B[39m message about something!\n');

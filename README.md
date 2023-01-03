@@ -372,8 +372,12 @@ log.setIndentString('\t'); // Sets indentation string (\t by default)
 ```
 **Instanced Usage**
 ```js
+// The `log` import is a global instance of the `Log` class for convenience. To create unique logging instances, you can import the `Log` class directly.
+
+import { log, Log } from 'kogs';
+
 // Unique logging instances can be created which do not inherit or affect other logging instances, including the global one.
-const myLogger = log.instance();
+const myLogger = new Log();
 myLogger.indent().write('Foo');
 log.write('Bar'); // Global logger unaffected.
 

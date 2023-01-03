@@ -513,7 +513,7 @@ export function formatDate(format, date) {
 	return out;
 }
 
-class Log {
+export class Log {
 	_lineTerminator = '\n';
 	_indentString = '\t';
 	_indentLevel = 0;
@@ -678,14 +678,6 @@ class Log {
 				resolve(answer);
 			});
 		});
-	}
-
-	/**
-	 * Create a new logging instance which does not inherit settings.
-	 * @returns {Log}
-	 */
-	instance() {
-		return new Log();
 	}
 }
 
